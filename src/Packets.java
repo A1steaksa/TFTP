@@ -58,11 +58,11 @@ public class Packets {
 	}
 	
 	//Creates an ACK packet
-	public static DatagramPacket createACKPacket( short blockNum ) throws UnknownHostException{
+	public static DatagramPacket createACKPacket( byte[] blockNum ) throws UnknownHostException{
 		
 		byte[][] messageGroup = {
 				new byte[]{ 0, ACK },
-				new byte[]{ (byte)( blockNum >> 8 ), (byte) blockNum }, //Converts blockNum into 2 bytes
+				blockNum, //Converts blockNum into 2 bytes
 		};
 		
 		//Create and return the packet

@@ -73,7 +73,7 @@ public class TFTPPrimary {
 		dsocket.send( requestPacket );
 		
 		//Wait for reply
-		DatagramPacket recievePacket = Packets.createACKPacket( (short) 0 );
+		DatagramPacket recievePacket = Packets.createACKPacket( new byte[] { 0, 0 } );
 		dsocket.receive( recievePacket );
 		
 		//Check if we got an ACK
@@ -100,7 +100,7 @@ public class TFTPPrimary {
 			dsocket.send( dataPacket );
 			
 			//Wait for ACK
-			DatagramPacket dataACKPacket = Packets.createACKPacket( (short) 0 );
+			DatagramPacket dataACKPacket = Packets.createACKPacket( new byte[] { 0, 0 } );
 			dsocket.receive( dataACKPacket );
 			
 			//Check if we got an ACK
@@ -147,7 +147,7 @@ public class TFTPPrimary {
 		dsocket.send( requestPacket );
 		
 		//Create file output
-		FileOutputStream output = new FileOutputStream( fileName, true );
+		FileOutputStream output = new FileOutputStream( fileName );
 		
 		//Path path = Paths.get( fileName );
 		
@@ -159,17 +159,16 @@ public class TFTPPrimary {
 		
 		//Once we have the packet, send an ACK
 		byte[] data = recievePacket.getData();
-		for (int i = 0; i < data.length; i++) {
-			System.out.println( Integer.toBinaryString( data[i] ) );
-		}
-		short blockNum = (short) ( ( (short) data[2] << 8 ) | data[3] );
+		byte[] blockNum = new byte[] { data[2], data[3] };
 		
 		//It's not supposed to, but it looks like some servers send an ACK for a read request instead of the first data packet.  This is for that case.
 		if( data[1] != 4 ){
 			
+			//Trim 4 control bytes from data
+			data = Arrays.copyOfRange( data, 4, data.length );
+			
 			//Write to file
-			output.write( data );
-			//Files.write(path, data, StandardOpenOption.WRITE);
+			//output.write( data );
 		}
 		
 		//Get the source port from the DATA to use as new destination port for this connection
@@ -186,15 +185,16 @@ public class TFTPPrimary {
 			
 			//Once we have the packet, send an ACK
 			data = recievePacket.getData();
-			blockNum = (short) ( ( (short) data[2] << 8 ) | data[3] );
+			blockNum = new byte[] { data[2], data[3] };
 			DatagramPacket ackPacket = Packets.createACKPacket( blockNum );
 			dsocket.send( ackPacket );
 			
+			//Trim 4 control bytes from data
+			data = Arrays.copyOfRange( data, 4, data.length );
+			
 			//Write to file
-			
-			
 			//If the most recent data packet had fewer than the maximum number of data bytes, this is the end of the file
-			if( recievePacket.getLength() < maxDataBytes + 4 ){
+			if( recievePacket.getLength() < maxDataBytes ){
 				byte[] clippedData;
 				clippedData = Arrays.copyOfRange( data, 0, recievePacket.getLength() );
 				output.write( clippedData );
