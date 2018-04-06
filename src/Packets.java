@@ -1,3 +1,4 @@
+import java.io.*;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -13,6 +14,20 @@ public class Packets {
 	static final byte DATA		= 	0b00000011; //Data
 	static final byte ACK		= 	0b00000100; //Acknowledgment
 	static final byte ERROR		= 	0b00000101; //Error
+	static final byte LF		=	0b00001010;
+	static final byte CR		=	0b00001101;
+	static final byte NUL		=	0b00000000;
+
+
+	
+	
+	
+	public static toNetASCII(Byte[] buffer) {
+		
+		return;
+	}
+	
+	
 	
 	//Creates a read request packet
 	public static DatagramPacket createRRQPacket( String fileName ) throws UnknownHostException{

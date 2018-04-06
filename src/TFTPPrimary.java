@@ -1,4 +1,7 @@
 import java.io.File;
+
+import java.lang.*;
+import java.io.*;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,15 +28,17 @@ public class TFTPPrimary {
 	public static String host 		=	"192.168.1.226";
 	//static final String host 		=	"127.0.0.1";
 	public static int maxDataBytes	=	512;
+	public static final int OCTET	=	1;
+	public static final int NETASCII=	2;
 	
 	public static void main(String[] args) throws IOException {
 		
 		//sendFile( host );
-		getFile( host, "face.png" );
+		getFile( host, "face.png", OCTET );
 	}
 	
 	//Select and send file
-	public static void sendFile( String host ) throws IOException{
+	public static void sendFile( String host, int mode ) throws IOException{
 		
 		//Create the file chooser
 		JFileChooser jfc = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
@@ -45,7 +50,7 @@ public class TFTPPrimary {
 		if (returnValue == JFileChooser.APPROVE_OPTION) {
 			selectedFile = jfc.getSelectedFile();
 			
-			sendFile( host, selectedFile );
+			sendFile( host, selectedFile, mode );
 		}else{
 			System.out.println( "No file selected.  Exiting..." );
 			System.exit( 0 );
@@ -55,7 +60,7 @@ public class TFTPPrimary {
 	}
 	
 	//Sends a file to the given host
-	public static void sendFile( String host, File file ) throws IOException{
+	public static void sendFile( String host, File file, int mode ) throws IOException{
 		
 		//Get our TID/source port
 		int sourcePort = getTID();
@@ -129,7 +134,7 @@ public class TFTPPrimary {
 	}
 	
 	//Gets the specified file from the server
-	public static void getFile( String host, String fileName ) throws IOException{
+	public static void getFile( String host, String fileName, int mode ) throws IOException{
 		
 		//Get our TID/source port
 		int sourcePort = getTID();
@@ -208,6 +213,7 @@ public class TFTPPrimary {
 		}
 		
 		System.out.println( "Finished reading file." );
+		
 		
 		//Flush and close
 		//output.flush();
