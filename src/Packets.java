@@ -2,6 +2,8 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 
 
 public class Packets {
@@ -17,16 +19,39 @@ public class Packets {
 	static final byte LF		=	0b00001010;
 	static final byte CR		=	0b00001101;
 	static final byte NUL		=	0b00000000;
+	static final String NEWLINE = 	System.getProperty("line.separator");
 
-
 	
 	
 	
-	public static toNetASCII(Byte[] buffer) {
-		
-		return;
+	public static Byte[] toNetASCII(Byte[] buffer) {
+		List<Byte> blist = Arrays.asList(buffer);
+		for (int i = 0; i < blist.size(); i++) {
+			if(blist.get(i) == CR && (blist.get(i+1) != LF || blist.get(i+1) != NUL)) {
+				blist.add(i+1, NUL);
+			}
+			if(blist.get(i) == LF && (blist.get(i-1) != CR)) {
+				blist.add(i-1, CR);
+			}
+		}
+		Byte[] output = (Byte[]) blist.toArray();
+		return output;
 	}
 	
+	
+	public static Byte[] fromNetASCII(Byte[] buffer) {
+		List<Byte> blist = Arrays.asList(buffer);
+		for (int i = 0; i < blist.size(); i++) {
+			if(blist.get(i) == CR && blist.get(i+1) == NUL) {
+				blist.remove(i+1);
+			}
+			if(blist.get(i) == CR && (blist.get(i+1) == LF)) {
+				blist.remove(i);
+			}
+		}
+		Byte[] output = (Byte[]) blist.toArray();
+		return output;
+	}
 	
 	
 	//Creates a read request packet
