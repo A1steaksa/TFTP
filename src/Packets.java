@@ -20,6 +20,7 @@ public class Packets {
 	static final byte CR		=	0b00001101;
 	static final byte NUL		=	0b00000000;
 	static final String NEWLINE = 	System.getProperty("line.separator");
+	
 
 	
 	
@@ -44,9 +45,6 @@ public class Packets {
 		for (int i = 0; i < blist.size(); i++) {
 			if(blist.get(i) == CR && blist.get(i+1) == NUL) {
 				blist.remove(i+1);
-			}
-			if(blist.get(i) == CR && (blist.get(i+1) == LF)) {
-				blist.remove(i);
 			}
 		}
 		Byte[] output = (Byte[]) blist.toArray();
